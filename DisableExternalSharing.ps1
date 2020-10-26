@@ -1,8 +1,10 @@
 <#
     .DESCRIPTION
         An runbook that;
-        Gets its input parameter from Power Automate 
+        authenticates with a certificate
+        Gets its input parameter from Logic Apps 
         Iterates through an object from the input then stores each item in an ArrayList
+        disables external sharing configuration for each onedrive owner in the list
 
     .NOTES
         AUTHOR: Abioye Mohammed
@@ -26,18 +28,21 @@ foreach($person in $UnResponsiveUsers.value.email)
     $ArrayOfUsers.add("$person")
 } 
 
-#connect to SharePoint PnP
-#Import-Module -Name SharePointPnPPowerShellOnline -WarningAction SilentlyContinue
+#get Automation account name
+$connectionName = "AzureRunAsConnection"
+
+# Get the connection "AzureRunAsConnection "
+$servicePrincipalConnection = Get-AutomationConnection -Name $connectionName 
 
 #logOn credentials
-    $tenant               = "m365x685435"                               # O365 TENANT NAME
-    $clientId             = "4cade6de-bdac-4f0d-a63a-99bf3ce67348"      # AAD APP PRINCIPAL CLIENT ID
+    $tenant               = "Enter your Domain Name"                               # O365 TENANT NAME
+    $clientId             = $servicePrincipalConnection.ApplicationID   # AAD APP PRINCIPAL CLIENT ID
 
 #Stored as a variable
-    $appPrincipalPwdVar   = 'AppPrincipalCertPassword'                  # CERT PASSWORD VARIABLE
+    $appPrincipalPwdVar   = 'Enter the name of the password variable stored in Automation account or enter a string'  # CERT PASSWORD VARIABLE
 
 #stored as a certificate
-    $appPrincipalCertVar  = 'AppPrincipalCert'                          # CERT NAME VARIABLE
+    $appPrincipalCertVar  = 'Enter the name of the .pfx certificate uploaded to your automation account > certicates tab'                          # CERT NAME VARIABLE
 
 $VerbosePreference = "Continue"
 
